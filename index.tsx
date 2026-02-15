@@ -1,9 +1,3 @@
-/*
- * Vencord, a Discord client mod
- * Copyright (c) 2025 Vendicated and contributors
- * SPDX-License-Identifier: GPL-3.0-or-later
- */
-
 import "./styles.css";
 
 import { findGroupChildrenByChildId } from "@api/ContextMenu";
@@ -12,6 +6,7 @@ import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs, EquicordDevs } from "@utils/constants";
 import { classNameFactory } from "@utils/css";
+import { Logger } from "@utils/Logger";
 import { closeModal, openModal } from "@utils/modal";
 import definePlugin, { OptionType } from "@utils/types";
 import { Channel } from "@vencord/discord-types";
@@ -20,6 +15,15 @@ import { Menu, Tooltip, useEffect, useState } from "@webpack/common";
 import { Boo, clearChannelFromGhost, getBooCount, getGhostedChannels, onBooCountChange } from "./Boo";
 import { getChannelDisplayName, GhostedUsersModal } from "./GhostedUsersModal";
 import { IconGhost } from "./IconGhost";
+
+export const pluginInfo = {
+    id: "ghosted",
+    name: "Ghosted",
+    description: "A cute ghost will appear if you don't answer their DMs",
+    color: "#7289da"
+};
+
+const logger = new Logger(pluginInfo.name, pluginInfo.color);
 
 export const cl = classNameFactory("vc-boo-");
 
