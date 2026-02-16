@@ -122,7 +122,7 @@ function BooIndicator() {
 
 // region Definition
 export default definePlugin({
-    name: pluginInfo.id,
+    name: pluginInfo.name,
     description: pluginInfo.description,
     authors: pluginInfo.authors,
     settings,
