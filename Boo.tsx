@@ -2,7 +2,8 @@ import { Channel, Message } from "@vencord/discord-types";
 import { findCssClassesLazy } from "@webpack";
 import { MessageStore, useEffect, UserStore, useState, useStateFromStores } from "@webpack/common";
 
-import { cl, settings } from ".";
+import { cl } from ".";
+import { settings } from "./settings";
 import { IconGhost } from "./IconGhost";
 
 function isChannelExempted(channel: Channel): boolean {

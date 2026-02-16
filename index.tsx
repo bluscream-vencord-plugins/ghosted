@@ -1,67 +1,63 @@
+//// Plugin originally written for Equicord at 2026-02-16 by https://github.com/Bluscream, https://antigravity.google
+// region Imports
 import "./styles.css";
 
+import { Menu, Tooltip, useEffect, useState } from "@webpack/common";
 import { findGroupChildrenByChildId } from "@api/ContextMenu";
 import { addServerListElement, removeServerListElement, ServerListRenderPosition } from "@api/ServerList";
-import { definePluginSettings } from "@api/Settings";
 import ErrorBoundary from "@components/ErrorBoundary";
 import { Devs, EquicordDevs } from "@utils/constants";
 import { classNameFactory } from "@utils/css";
 import { Logger } from "@utils/Logger";
 import { closeModal, openModal } from "@utils/modal";
-import definePlugin, { OptionType } from "@utils/types";
+import definePlugin from "@utils/types";
 import { Channel } from "@vencord/discord-types";
-import { Menu, Tooltip, useEffect, useState } from "@webpack/common";
 
+import { settings } from "./settings";
 import { Boo, clearChannelFromGhost, getBooCount, getGhostedChannels, onBooCountChange } from "./Boo";
 import { getChannelDisplayName, GhostedUsersModal } from "./GhostedUsersModal";
 import { IconGhost } from "./IconGhost";
+// endregion Imports
 
+// region PluginInfo
 export const pluginInfo = {
     id: "ghosted",
     name: "Ghosted",
-    description: "A cute ghost will appear if you don't answer their DMs",
-    color: "#7289da"
+    description: "A cute ghost appears if you skip answering direct messages",
+    color: "#7289da",
+    authors: [
+        EquicordDevs.vei,
+        Devs.sadan,
+        EquicordDevs.justjxke,
+        EquicordDevs.iamme,
+        { name: "Assistant", id: 0n }
+    ],
 };
+// endregion PluginInfo
 
-const logger = new Logger(pluginInfo.name, pluginInfo.color);
-
+// region Variables
+export const logger = new Logger(pluginInfo.id, pluginInfo.color);
 export const cl = classNameFactory("vc-boo-");
+// endregion Variables
 
-export const settings = definePluginSettings({
-    showIndicator: {
-        type: OptionType.BOOLEAN,
-        description: "Show the ghost counter at the top of the server list",
-        default: true,
-        restartNeeded: false
-    },
-    showDmIcons: {
-        type: OptionType.BOOLEAN,
-        description: "Show ghost icons next to individual DMs",
-        default: true,
-        restartNeeded: false
-    },
-    ignoreGroupDms: {
-        type: OptionType.BOOLEAN,
-        description: "Exclude all group dms from ghosting",
-        default: false
-    },
-    exemptedChannels: {
-        type: OptionType.STRING,
-        description: "Comma-separated list of channel IDs to exempt from ghosting (right-click a DM channel to copy its ID)",
-        default: "",
-        restartNeeded: false
-    },
-    ignoreBots: {
-        type: OptionType.BOOLEAN,
-        description: "Ignore DMs from bots",
-        default: true,
-        restartNeeded: false
-    }
-});
+// region Utils
+function makeContextItem(props: { channel: Channel }) {
+    return (
+        <Menu.MenuItem
+            id="ec-ghosted-clear"
+            key="ec-ghosted-clear"
+            label="unghost"
+            action={() => {
+                clearChannelFromGhost(props.channel.id);
+            }}
+        />
+    );
+}
+// endregion Utils
 
+// region Components
 function BooIndicator() {
     const [count, setCount] = useState(getBooCount());
-    const [showJumpscare, setShowJumpscare] = useState(false);
 
     useEffect(() => {
         const unsubscribe = onBooCountChange(newCount => {
@@ -73,7 +69,7 @@ function BooIndicator() {
         };
     }, []);
 
-    if (!settings.store.showIndicator && !showJumpscare) return null;
+    if (!settings.store.showIndicator) return null;
 
     const handleClick = () => {
         const ghostedChannels = getGhostedChannels();
@@ -102,44 +98,33 @@ function BooIndicator() {
         return `${ghostedChannels.length} Ghosted Users`;
     };
 
+    if (!getGhostedChannels().length) return null;
+
     return (
-        <>
-            {settings.store.showIndicator && getGhostedChannels().length && (
-                <div id={cl("container")}>
-                    <Tooltip text={getTooltipText()} position="right">
-                        {({ onMouseEnter, onMouseLeave }) => (
-                            <div
-                                id={cl("container")}
-                                className={cl("clickable")}
-                                onMouseEnter={onMouseEnter}
-                                onMouseLeave={onMouseLeave}
-                                onClick={handleClick}
-                            >
-                                {count} <IconGhost fill="currentColor" />
-                            </div>
-                        )}
-                    </Tooltip>
-                </div>
-            )}
-        </>
+        <div id={cl("container")}>
+            <Tooltip text={getTooltipText()} position="right">
+                {({ onMouseEnter, onMouseLeave }) => (
+                    <div
+                        id={cl("container")}
+                        className={cl("clickable")}
+                        onMouseEnter={onMouseEnter}
+                        onMouseLeave={onMouseLeave}
+                        onClick={handleClick}
+                    >
+                        {count} <IconGhost fill="currentColor" />
+                    </div>
+                )}
+            </Tooltip>
+        </div>
     );
 }
+// endregion Components
 
-function makeContextItem(props) {
-    return <Menu.MenuItem
-        id="ec-ghosted-clear"
-        key="ec-ghosted-clear"
-        label="unghost"
-        action={() => {
-            clearChannelFromGhost(props.channel.id);
-        }}
-    />;
-}
-
+// region Definition
 export default definePlugin({
-    name: "Ghosted",
-    description: "A cute ghost will appear if you don't answer their DMs",
-    authors: [EquicordDevs.vei, Devs.sadan, EquicordDevs.justjxke, EquicordDevs.iamme],
+    name: pluginInfo.id,
+    description: pluginInfo.description,
+    authors: pluginInfo.authors,
     settings,
     dependencies: ["AudioPlayerAPI", "ServerListAPI"],
     contextMenus: {
@@ -187,3 +172,4 @@ export default definePlugin({
         removeServerListElement(ServerListRenderPosition.Above, this.renderIndicator);
     },
 });
+// endregion Definition

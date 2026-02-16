@@ -1,7 +1,7 @@
 {
     "name": "ghosted",
     "version": "1.0.0",
-    "description": "Automatically ghost ping channels/users",
+    "description": "A cute ghost appears if you skip answering direct messages",
     "main": "index.tsx",
     "author": {
         "name": "Bluscream",
