@@ -19,21 +19,8 @@ import { getChannelDisplayName, GhostedUsersModal } from "./GhostedUsersModal";
 import { IconGhost } from "./IconGhost";
 // endregion Imports
 
-// region PluginInfo
-export const pluginInfo = {
-    id: "ghosted",
-    name: "Ghosted",
-    description: "A cute ghost appears if you skip answering direct messages",
-    color: "#7289da",
-    authors: [
-        EquicordDevs.vei,
-        Devs.sadan,
-        EquicordDevs.justjxke,
-        EquicordDevs.iamme,
-        { name: "Assistant", id: 0n }
-    ],
-};
-// endregion PluginInfo
+import { pluginInfo } from "./info";
+export { pluginInfo };
 
 // region Variables
 export const logger = new Logger(pluginInfo.id, pluginInfo.color);
